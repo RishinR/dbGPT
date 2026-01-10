@@ -8,10 +8,12 @@ class PostgresDB:
     def __init__(self):
         self.conn = None
         self.table_details = None
+        self.schema = None
 
     async def connect(self):
         try:
-            self.conn = await asyncpg.connect(settings.POSTGRES_BD_URI)
+            self.conn = await asyncpg.connect(settings.POSTGRES_DB_URI)
+            self.schema = settings.DB_SCHEMA
             print("Connected to postgres db!")
         except Exception as e:
             print(f"Connection to postgres DB failed: {e}")
@@ -42,10 +44,11 @@ class PostgresDB:
             print("Connection to db is not yet established!")
             return
         try:
-            get_all_tables_query = """
+            schema = self.schema or 'public'
+            get_all_tables_query = f"""
                 SELECT table_name
                 FROM information_schema.tables
-                WHERE table_schema = 'public'
+                WHERE table_schema = '{schema}'
                 AND table_type = 'BASE TABLE';
             """
             tables = await self.fetch_all(get_all_tables_query)
