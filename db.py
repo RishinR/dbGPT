@@ -1,7 +1,7 @@
+import re
 import asyncpg
 from config import settings
 from groq_client import groq_client
-# from gemini_client import gemini_client
 
 
 class PostgresDB:
@@ -129,7 +129,10 @@ class PostgresDB:
 
             response = groq_client.get_chat_completion(history)
             # response = await gemini_client.get_chat_completion(history)
-            return response
+            if response:
+                response = response.split("```sql")[1].split("```")[0].strip()
+                return response
+            return None
         except Exception as e:
             print(f"Failed to generate sql query: {e}")
 
