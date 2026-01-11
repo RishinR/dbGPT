@@ -56,7 +56,11 @@ async def main() -> None:
             else:  # mongodb
                 mongo_query = await db.generate_mongo_query(enhanced_user_query)
                 # print(f"MongoDB Query Generated:\n{mongo_query}")
+               
                 if mongo_query:
+                    if mongo_query.get("allowed") is False:
+                        data = []
+                        raise Exception("The requested operation is not allowed.")
                     data = await db.execute_query(mongo_query)
                     query_str = str(mongo_query)
                 else:

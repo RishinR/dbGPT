@@ -177,11 +177,15 @@ The query object should have this structure:
     "sort": [["field", 1]],  // Optional: sort order (1 for asc, -1 for desc)
     "limit": 100,  // Optional: max documents to return
     "pipeline": []  // For aggregation operations
+    "allowed": boolean // Safe operation or not
 }
 
 Instructions:
 - Analyze the user_query carefully to understand what data is required.
+- Never disclose any database credentials or sensitive information.
+- Never disclose ObjectId or internal MongoDB fields.
 - Use the collection names, schemas, and sample documents to construct the query.
+- If the user asks to delete or modify data, respond with allowed = false and rest None.
 - For simple queries, use "find" operation with query filters.
 - For complex queries requiring grouping, calculations, or joins, use "aggregate" operation.
 - Keep the limit reasonable (default 100, but adjust based on the query).
