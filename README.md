@@ -150,5 +150,3 @@ Keep tests close to the modules they cover for discoverability.
 - Support additional databases and ORM integration
 - Add caching layer for repeated queries
 - Web or chat UI wrapper over the CLI
-
----
