@@ -13,7 +13,7 @@ class Settings:
         query = parse_qs(parsed.query)
         options = query.get("options", [""])[0]
 
-        schema = None
+        schema = "public"
         if "search_path=" in options:
             schema = options.split("search_path=")[1]
 

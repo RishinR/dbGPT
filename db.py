@@ -8,7 +8,7 @@ class PostgresDB:
     def __init__(self):
         self.conn = None
         self.table_details = None
-        self.schema = None
+        self.schema = "public"
 
     async def connect(self):
         try:
@@ -44,11 +44,10 @@ class PostgresDB:
             print("Connection to db is not yet established!")
             return
         try:
-            schema = self.schema or "public"
             get_all_tables_query = f"""
                 SELECT table_name
                 FROM information_schema.tables
-                WHERE table_schema = '{schema}'
+                WHERE table_schema = '{self.schema}'
                 AND table_type = 'BASE TABLE';
             """
             tables = await self.fetch_all(get_all_tables_query)
