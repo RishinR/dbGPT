@@ -150,3 +150,8 @@ Keep tests close to the modules they cover for discoverability.
 - Support additional databases and ORM integration
 - Add caching layer for repeated queries
 - Web or chat UI wrapper over the CLI
+
+---
+
+## License
+MIT License. This project is licensed under the MIT License — see [LICENSE](LICENSE) for details.
