@@ -1,19 +1,19 @@
-# dbGPT
+# dbGPT 📈
 
 An LLM-powered, database-aware assistant. dbGPT orchestrates a large language model (via Groq) with a simple database layer to answer user questions, generate insights, and produce helpful responses grounded in your data. The project is organized into small, focused modules for configuration, DB access, LLM interactions, orchestration, and response shaping.
 
 ---
 
-## Features
-- LLM integration via Groq client wrapper
-- Simple database access layer (extensible for your DB)
-- Orchestration agent coordinating model calls and data lookups
-- Response agent to format and refine model outputs for end users
-- Minimal, composable Python modules ready for extension
+## ✨ Features
+- 🤖 LLM integration via Groq client wrapper
+- 🗄️ Simple database access layer (extensible for your DB)
+- 🎛️ Orchestration agent coordinating model calls and data lookups
+- 📝 Response agent to format and refine model outputs for end users
+- 🧩 Minimal, composable Python modules ready for extension
 
 ---
 
-## Repository Structure
+## 📁 Repository Structure
 - `config.py` — Centralized configuration helpers (e.g., env vars, constants)
 - `db.py` — Database access utilities (connect/query helpers)
 - `groq_client.py` — Groq LLM client wrapper and helpers
@@ -24,14 +24,14 @@ An LLM-powered, database-aware assistant. dbGPT orchestrates a large language mo
 
 ---
 
-## Requirements
+## ⚙️ Requirements
 - Python 3.10+ (recommended 3.11+)
 - macOS, Linux, or Windows (instructions below use macOS/Linux style)
 - A Groq API key (if using Groq Cloud)
 
 ---
 
-## Quickstart
+## 🚀 Quickstart
 
 1) Clone and enter the project directory:
 ```bash
@@ -74,7 +74,7 @@ python main.py
 
 ---
 
-## Configuration
+## 🛠️ Configuration
 Configuration typically flows through `config.py` and environment variables so you can switch environments without code changes.
 
 Common environment variables:
@@ -88,7 +88,7 @@ Tips:
 
 ---
 
-## How It Works
+## 🔗 How It Works
 - `groq_client.py` encapsulates LLM calls (authentication, parameters, and request/response handling).
 - `db.py` exposes a minimal interface for connecting and running queries.
 - `orchestration_agent.py` decides when to query the DB, when to ask the LLM, and how to combine results.
@@ -99,7 +99,7 @@ This separation keeps each concern focused and easier to test/extend.
 
 ---
 
-## Usage Examples
+## 💡 Usage Examples
 Run the entrypoint and interact via the terminal:
 ```bash
 python main.py
@@ -111,7 +111,7 @@ Example flow you might implement or already have:
 
 ---
 
-## Development
+## 👩‍💻 Development
 - Use a virtual environment and pin dependencies in `requirements.txt`.
 - Prefer small, focused functions for agents and clients.
 - Add type hints and docstrings for clarity.
@@ -127,7 +127,7 @@ mypy .
 
 ---
 
-## Testing
+## ✅ Testing
 If tests are added later:
 ```bash
 pip install pytest
@@ -137,7 +137,7 @@ Keep tests close to the modules they cover for discoverability.
 
 ---
 
-## Troubleshooting
+## 🐛 Troubleshooting
 - "Module not found": Ensure the virtual environment is active and `pip install -r requirements.txt` ran successfully.
 - "Unauthorized"/401 from LLM API: Check `GROQ_API_KEY` and that your key is valid.
 - DB connection errors: Verify `DATABASE_URL` format and network reachability.
@@ -145,13 +145,10 @@ Keep tests close to the modules they cover for discoverability.
 
 ---
 
-## Roadmap Ideas
+## 🗺️ Roadmap Ideas
 - Add streaming responses and tool/function calling
 - Support additional databases and ORM integration
 - Add caching layer for repeated queries
 - Web or chat UI wrapper over the CLI
 
 ---
-
-## License
-Choose a license (e.g., MIT, Apache-2.0) and add a `LICENSE` file if you plan to distribute this project.
