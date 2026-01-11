@@ -59,7 +59,7 @@ class PostgresDB:
         tables = await self.get_all_tables()
         if not tables:
             print("Tables list is empty!")
-            return
+            return False
         table_details = []
         try:
             for table in tables:
@@ -93,6 +93,7 @@ class PostgresDB:
                     }
                 )
             self.table_details = table_details
+            return True
         except Exception as e:
             print(f"Error in getting table info from DB: {e}")
 

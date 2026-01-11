@@ -9,7 +9,10 @@ async def main() -> None:
     await postgres_db.connect()
 
     # Load table details
-    await postgres_db.load_table_details()
+    load_table_status = await postgres_db.load_table_details()
+    if not load_table_status:
+        print("Schema doesnt have any tables, please try creating one or add a schema in the uri which contains tables")
+        return
 
     # Initialise orchestration agent
     orchestration_agent = OrchestrationAgent()
