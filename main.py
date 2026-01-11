@@ -50,17 +50,25 @@ async def main() -> None:
             # Generate and execute query based on database type
             if db_type == "postgres":
                 sql_query = await db.generate_sql_query(enhanced_user_query) or ""
+                
+                # Check if LLM detected a write operation request
+                if sql_query == "WRITE_OPERATION_REQUESTED":
+                    print("Assistant: I can only help you query and retrieve data from the database. I'm not able to modify, update, insert, or delete records. This is a read-only interface designed to keep your data safe.\n")
+                    continue
+                
                 # print(f"SQL Query Generated:\n{sql_query}")
                 data = await db.fetch_all(sql_query)
                 query_str = sql_query
             else:  # mongodb
                 mongo_query = await db.generate_mongo_query(enhanced_user_query)
                 # print(f"MongoDB Query Generated:\n{mongo_query}")
-               
+                
+                # Check if LLM detected a write operation request
+                if mongo_query and "error" in mongo_query and mongo_query["error"] == "write_operation_requested":
+                    print("Assistant: I can only help you query and retrieve data from the database. I'm not able to modify, update, insert, or delete records. This is a read-only interface designed to keep your data safe.\n")
+                    continue
+                
                 if mongo_query:
-                    if mongo_query.get("allowed") is False:
-                        data = []
-                        raise Exception("The requested operation is not allowed.")
                     data = await db.execute_query(mongo_query)
                     query_str = str(mongo_query)
                 else:

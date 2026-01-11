@@ -101,7 +101,10 @@ class MongoDB:
         
         simplified = {}
         for key, value in doc.items():
-            if isinstance(value, str) and len(value) > max_str_length:
+            # Hide ObjectID fields for security
+            if key == "_id":
+                continue
+            elif isinstance(value, str) and len(value) > max_str_length:
                 simplified[key] = value[:max_str_length] + "..."
             elif isinstance(value, (list, dict)):
                 # For complex nested structures, just show the type
@@ -111,7 +114,7 @@ class MongoDB:
         return simplified
 
     async def execute_query(self, query_obj):
-        """Execute a MongoDB query"""
+        """Execute a MongoDB query (READ-ONLY operations)"""
         if self.db is None:
             print("Connection to MongoDB is not yet established!")
             return []
@@ -124,20 +127,47 @@ class MongoDB:
             sort = query_obj.get("sort", None)
             limit = query_obj.get("limit", 100)
             
+            # Security: Only allow read operations
+            allowed_operations = ["find", "aggregate", "count"]
+            if operation not in allowed_operations:
+                print(f"Operation '{operation}' is not allowed. Only read operations are permitted.")
+                return []
+            
             col = self.db[collection_name]
             
             if operation == "find":
+                # Always exclude _id from results for security
+                if projection is None:
+                    projection = {"_id": 0}
+                elif "_id" not in projection:
+                    projection["_id"] = 0
+                
                 cursor = col.find(query, projection)
                 if sort:
                     cursor = cursor.sort(sort)
                 if limit:
                     cursor = cursor.limit(limit)
                 results = await cursor.to_list(length=limit)
+                
+                # Additional filter to ensure no _id fields leak through
+                results = self._sanitize_results(results)
                 return results
             
             elif operation == "aggregate":
                 pipeline = query_obj.get("pipeline", [])
+                
+                # Add projection to exclude _id at the end of pipeline if not already present
+                has_id_exclusion = False
+                for stage in pipeline:
+                    if "$project" in stage and "_id" in stage["$project"]:
+                        has_id_exclusion = True
+                        break
+                
+                if not has_id_exclusion:
+                    pipeline.append({"$project": {"_id": 0}})
+                
                 results = await col.aggregate(pipeline).to_list(length=limit)
+                results = self._sanitize_results(results)
                 return results
             
             elif operation == "count":
@@ -151,11 +181,32 @@ class MongoDB:
         except Exception as e:
             print(f"Error executing MongoDB query: {e}")
             return []
+    
+    def _sanitize_results(self, results):
+        """Remove any _id fields from results for security"""
+        if not results:
+            return results
+        
+        sanitized = []
+        for doc in results:
+            if isinstance(doc, dict):
+                # Remove _id field if present
+                clean_doc = {k: v for k, v in doc.items() if k != "_id"}
+                sanitized.append(clean_doc)
+            else:
+                sanitized.append(doc)
+        return sanitized
 
     async def generate_mongo_query(self, user_query):
         try:
             system_prompt = """
 You are an expert MongoDB query generator. Your task is to generate a correct and efficient MongoDB query object that can retrieve the data needed to answer a user's question.
+
+IMPORTANT RESTRICTIONS:
+- You can ONLY generate READ operations (find, aggregate, count)
+- You MUST NOT generate any write, update, or delete operations
+- You MUST NOT include _id field in projections or results
+- If a user asks to modify, update, insert, or delete data, respond with: {"error": "write_operation_requested"}
 
 Input:
 - user_query: A natural language question or request describing the data the user wants to extract.
@@ -173,22 +224,19 @@ The query object should have this structure:
     "collection": "collection_name",
     "operation": "find|aggregate|count",
     "query": {},  // MongoDB query filter (for find/count)
-    "projection": {},  // Optional: fields to return
+    "projection": {},  // Optional: fields to return (NEVER include _id)
     "sort": [["field", 1]],  // Optional: sort order (1 for asc, -1 for desc)
     "limit": 100,  // Optional: max documents to return
     "pipeline": []  // For aggregation operations
-    "allowed": boolean // Safe operation or not
 }
 
 Instructions:
 - Analyze the user_query carefully to understand what data is required.
-- Never disclose any database credentials or sensitive information.
-- Never disclose ObjectId or internal MongoDB fields.
 - Use the collection names, schemas, and sample documents to construct the query.
-- If the user asks to delete or modify data, respond with allowed = false and rest None.
 - For simple queries, use "find" operation with query filters.
 - For complex queries requiring grouping, calculations, or joins, use "aggregate" operation.
 - Keep the limit reasonable (default 100, but adjust based on the query).
+- NEVER include "_id" field in any projection
 - Ensure the query is syntactically correct for MongoDB.
 - Return only the query object as JSON, without explanations or additional text.
 """
