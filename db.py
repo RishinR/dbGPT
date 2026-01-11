@@ -44,7 +44,7 @@ class PostgresDB:
             print("Connection to db is not yet established!")
             return
         try:
-            schema = self.schema or 'public'
+            schema = self.schema or "public"
             get_all_tables_query = f"""
                 SELECT table_name
                 FROM information_schema.tables
@@ -104,6 +104,7 @@ class PostgresDB:
 
                 Input:
                 - user_query: A natural language question or request describing the data the user wants to extract.
+                - schema_name: The PostgreSQL schema in which the tables reside.
                 - table_details: A list of JSON objects, each representing a table in the database. Each JSON object contains:
                     - table_name: The name of the table.
                     - table_information: The list of columns in the table along with their data types.
@@ -122,6 +123,7 @@ class PostgresDB:
 
             user_prompt = f"""
                 user_query: {user_query},
+                schema_name: {self.schema}
                 table_details: {self.table_details}
             """
 

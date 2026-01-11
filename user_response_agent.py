@@ -23,4 +23,5 @@ class UserResponseAgent:
         response = groq_client.get_chat_completion(history)
         return response
 
+
 user_response_agent = UserResponseAgent()
