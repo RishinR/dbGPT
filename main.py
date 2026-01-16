@@ -27,10 +27,10 @@ async def main() -> None:
 
         # Enhance user_query based on previous conversations
         enhanced_user_query = await orchestration_agent.enhance_user_query(user_query)
-        print(f"Enhanced user query:\n{enhanced_user_query}")
+        # print(f"Enhanced user query:\n{enhanced_user_query}")
 
         sql_query = await postgres_db.generate_sql_query(enhanced_user_query) or ""
-        print(f"SQL Query Generated:\n{sql_query}")
+        # print(f"SQL Query Generated:\n{sql_query}")
 
         data = await postgres_db.fetch_all(sql_query)
         response = (

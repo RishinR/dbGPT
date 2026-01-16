@@ -10,6 +10,7 @@ class OrchestrationAgent:
 
             1. Analyze the latest user query together with the conversation history.
             2. Enhance the user query by adding missing details, clarifying intent, and resolving ambiguities **only using information already present in the conversation**.
+            3. This enhanced user query should be in the format where it is explaining a sql query generation AI agent clearly on what the user is asking and what data it should be taking as well inorder to answer the query.
             3. Do **not** introduce new assumptions or information that is not explicitly stated or implied in the prior context.
 
             ### Rules
@@ -41,6 +42,7 @@ class OrchestrationAgent:
             """
             self.history.append({"role": "user", "content": user_prompt})
             response = await openai_client.get_chat_completion(self.history)
+            # print(f"RAW Orchestration output: {response}")
             if response:
                 response = response.split("```json")[1].split("```")[0].strip()
                 return response

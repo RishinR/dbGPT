@@ -122,6 +122,8 @@ class PostgresDB:
                 Use the table names, column names, types, and sample data to construct the SQL query.
                 Ensure the SQL query is syntactically correct for PostgreSQL and optimized for accuracy and clarity.
                 Return only the SQL query as the output, without explanations or additional text.
+                The output should contain a single executable SQL query and not multiple sections or multiple sub queries.
+                Don't use WITH clauses and then the sql query reads from the WITH clause.
 
                 Policy:
                 - Generate only read-only queries. Produce a single SELECT statement (CTEs using WITH are allowed) that retrieves the requested data.
